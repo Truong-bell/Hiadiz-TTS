@@ -1,0 +1,10 @@
+streamlit
+gTTS
+edge-tts
+nest_asyncio
+requests
+SpeechRecognition
+pydub
+PyPDF2
+python-docx
+
