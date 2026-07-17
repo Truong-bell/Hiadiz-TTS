@@ -53,7 +53,6 @@ def split_text(text: str, max_chars: int):
         else:
             if current:
                 chunks.append(current)
-            # câu quá dài thì cắt cứng
             while len(s) > max_chars:
                 chunks.append(s[:max_chars])
                 s = s[max_chars:]
@@ -188,7 +187,7 @@ def extract_text_from_file(f):
 st.sidebar.header("⚙️ Cấu hình giọng nói")
 engine_label = st.sidebar.radio(
     "Chọn engine TTS:",
-    ["Google TTS (gTTS) — miễn phí", "Edge TTS (Microsoft) — miễn phí, nhiều giọng",
+    ["Edge TTS (Microsoft) — miễn phí, nhiều giọng", "Google TTS (gTTS) — miễn phí",
      "LuvVoice — cần API key riêng, hỗ trợ voice cloning"],
 )
 engine = {"Google TTS (gTTS) — miễn phí": "gtts",
@@ -207,10 +206,15 @@ st.sidebar.caption(
     "không tốn tài nguyên máy chủ — phù hợp để deploy free mà không lo lỗi server."
 )
 
-tab1, tab2, tab3, tab4 = st.tabs(["📝 Text → Speech", "🎙️ Speech → Text", "📄 File → Speech", "🧬 Voice Cloning"])
+page = st.radio(
+    "Chọn chức năng:",
+    ["📝 Text → Speech", "🎙️ Speech → Text", "📄 File → Speech", "🧬 Voice Cloning"],
+    horizontal=True, label_visibility="collapsed",
+)
+st.divider()
 
-# ---------- TAB 1: TEXT TO SPEECH ----------
-with tab1:
+# ---------- TEXT TO SPEECH ----------
+if page == "📝 Text → Speech":
     st.subheader("Chuyển văn bản thành giọng nói")
     text_input = st.text_area("Nhập văn bản:", height=150, placeholder="Nhập nội dung cần đọc...", key="t1_text")
 
@@ -275,8 +279,8 @@ with tab1:
                 st.audio(buf, format="audio/mp3")
                 st.download_button("⬇️ Tải file MP3", data=buf, file_name="speech.mp3", mime="audio/mp3", key="t1_dl")
 
-# ---------- TAB 2: SPEECH TO TEXT ----------
-with tab2:
+# ---------- SPEECH TO TEXT ----------
+elif page == "🎙️ Speech → Text":
     st.subheader("Chuyển giọng nói thành văn bản")
     st.caption("Tải lên file âm thanh (wav, mp3, m4a...) để nhận dạng. Dùng Google Speech Recognition (miễn phí, cần internet).")
     audio_file = st.file_uploader("Chọn file audio", type=["wav", "mp3", "m4a", "ogg", "flac"], key="t2_upload")
@@ -306,8 +310,8 @@ with tab2:
                 except Exception as e:
                     st.error(f"Lỗi xử lý file audio: {e}")
 
-# ---------- TAB 3: FILE TO SPEECH ----------
-with tab3:
+# ---------- FILE TO SPEECH ----------
+elif page == "📄 File → Speech":
     st.subheader("Chuyển file văn bản thành giọng nói")
     doc_file = st.file_uploader("Chọn file (.txt, .pdf, .docx)", type=["txt", "pdf", "docx"], key="t3_upload")
 
@@ -360,8 +364,8 @@ with tab3:
                     st.download_button("⬇️ Tải file MP3", data=buf, file_name="file_speech.mp3",
                                         mime="audio/mp3", key="t3_dl")
 
-# ---------- TAB 4: VOICE CLONING ----------
-with tab4:
+# ---------- VOICE CLONING ----------
+elif page == "🧬 Voice Cloning":
     st.subheader("🧬 Voice Cloning")
     st.markdown(
         """
